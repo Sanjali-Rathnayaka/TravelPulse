@@ -5,7 +5,8 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
 # ✅ Load geocoded data (file should be present in the same directory on GitHub)
-df = pd.read_csv(r"C:\Users\Sanjali\Desktop\Research Method\Geo_Reviews_With_Coordinates.csv")
+df = pd.read_csv("Geo_Reviews_With_Coordinates.csv")
+
 
 # ✅ Clean column formatting
 df.columns = df.columns.str.strip()
@@ -117,4 +118,5 @@ else:
     st.warning("⚠️ No geolocation data available to plot. Check if geocoding was successful.")
 
 st.markdown("---")
+
 st.caption("🔍 Developed for: *Can sentiment analysis of tourist reviews help improve visibility of rural destinations in Sri Lanka through a mobile based recommendation system?*")

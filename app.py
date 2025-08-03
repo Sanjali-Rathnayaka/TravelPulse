@@ -99,6 +99,12 @@ for i, sentiment in enumerate(['Positive', 'Neutral', 'Negative']):
 st.subheader("🗺️ Tourist Review Locations Colored by Sentiment")
 
 map_df = filtered_df.dropna(subset=['Latitude', 'Longitude'])
+map_df = map_df[map_df['Latitude'].apply(lambda x: isinstance(x, (int, float)))]
+map_df = map_df[map_df['Longitude'].apply(lambda x: isinstance(x, (int, float)))]
+map_df['Latitude'] = pd.to_numeric(map_df['Latitude'], errors='coerce')
+map_df['Longitude'] = pd.to_numeric(map_df['Longitude'], errors='coerce')
+map_df = map_df.dropna(subset=['Latitude', 'Longitude'])
+
 if not map_df.empty:
     fig_map = px.scatter_mapbox(
         map_df,

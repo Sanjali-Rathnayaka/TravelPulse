@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 # ✅ Load geocoded data (file should be present in the same directory on GitHub)
 df = pd.read_csv("Geo_Reviews_With_Coordinates.csv")
 
-
 # ✅ Clean column formatting
 df.columns = df.columns.str.strip()
 df['Review'] = df['Review'].astype(str)
@@ -98,9 +97,8 @@ for i, sentiment in enumerate(['Positive', 'Neutral', 'Negative']):
 # --- 6. Map of Tourist Review Locations by Sentiment ---
 st.subheader("🗺️ Tourist Review Locations Colored by Sentiment")
 
-map_df = filtered_df.dropna(subset=['Latitude', 'Longitude'])
-map_df = map_df[map_df['Latitude'].apply(lambda x: isinstance(x, (int, float)))]
-map_df = map_df[map_df['Longitude'].apply(lambda x: isinstance(x, (int, float)))]
+map_df = filtered_df.copy()
+map_df.columns = map_df.columns.str.strip()
 map_df['Latitude'] = pd.to_numeric(map_df['Latitude'], errors='coerce')
 map_df['Longitude'] = pd.to_numeric(map_df['Longitude'], errors='coerce')
 map_df = map_df.dropna(subset=['Latitude', 'Longitude'])

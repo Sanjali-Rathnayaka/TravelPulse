@@ -24,23 +24,45 @@ activities_df['Activity Type'] = activities_df['Activity Type'].str.title()
  
 # 🔁 Map subtypes to categories manually (expand if needed)
 category_map = {
-    'Temple': 'Historical',
-    'Festival Site': 'Cultural',
+    # Adventure
+    'Hiking Trail': 'Adventure',
+    'Rock Climbing': 'Adventure',
+    'Zip-Lining': 'Adventure',
+    'Canoeing/Kayaking': 'Adventure',
+
+    # Nature
+    'Waterfall View': 'Nature',
+    'Forest Reserve': 'Nature',
+    'Botanical Garden': 'Nature',
+
+    # Bathing/Natural
+    'Natural Pool': 'Bathing/Natural',
+    'Hot Springs': 'Bathing/Natural',
+
+    # Cultural
+    'Village Experience': 'Cultural',
+    'Handicrafts Workshop': 'Cultural',
+    'Traditional Dance Show': 'Cultural',
+
+    # Historical
+    'Ancient Ruins': 'Historical',
+    'Colonial Landmark': 'Historical',
+
+    # Religious
+    'Temple Festival Site': 'Religious',
     'Pilgrimage Trail': 'Religious',
-    'Hiking': 'Adventure',
-    'Bird Watching': 'Nature',
-    'Hot Spring': 'Bathing/Natural',
-    'Lake': 'Scenic',
-    'Safari': 'Wildlife',
-    'Museum': 'Historical',
-    'Heritage Site': 'Historical',
-    'Farm Visit': 'Cultural',
-    # Add more as needed
+
+    # Scenic
+    'Sunrise Viewpoint': 'Scenic',
+    'Tea Plantation Walk': 'Scenic',
+
+    # Wildlife
+    'Bird Watching Area': 'Wildlife',
+    'Safari Zone': 'Wildlife',
 }
- 
 activities_df['Activity Subtype'] = activities_df['Activity Type']
 activities_df['Activity Category'] = activities_df['Activity Type'].map(category_map)
- 
+
  
 # --- Sidebar Filter ---
 st.sidebar.header("🔎 Filter Reviews")

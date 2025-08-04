@@ -90,27 +90,25 @@ if filter_mode == "01. Select Sentiment":
 elif filter_mode == "02. Select Area Type":
     area_choice = st.sidebar.radio("Choose Area Type", options=["Rural", "Urban"])
     filtered_df = df[df["Area Type"] == area_choice]
+if (
+    filter_mode == "03. Select Activity Category"
+    and not filtered_df.empty
+    and 'selected_category' in locals()
+    and selected_category is not None
+):
+    st.subheader("📋 Matched Rural Destinations & Activities")
 
-elif filter_mode == "03. Select Activity Category":
-    st.sidebar.markdown("### Choose an Activity Category")
-    category_options = sorted(activities_df['Activity Category'].dropna().unique())
-    selected_category = st.sidebar.selectbox("Activity Category", category_options)
-
-    subtype_options = activities_df[
-        activities_df['Activity Category'] == selected_category
-    ]['Activity Subtype'].dropna().unique()
-
-    selected_subtypes = st.sidebar.multiselect("Activity Subtype(s)", sorted(subtype_options))
-
-    matching_destinations = activities_df[
-        (activities_df['Activity Category'] == selected_category) &
-        (activities_df['Activity Subtype'].isin(selected_subtypes) if selected_subtypes else True)
-    ]['Destination'].unique()
-
-    filtered_df = df[
-        (df['Area Type'] == 'Rural') &
-        (df['Destination'].isin(matching_destinations))
+    filtered_activities = activities_df[
+        (activities_df['Activity Category'] == selected_category)
+        & (activities_df['Activity Subtype'].isin(selected_subtypes) if selected_subtypes else True)
     ]
+
+    if not filtered_activities.empty:
+        result_df = filtered_activities[['District', 'Destination', 'Activity Category', 'Activity Subtype', 'Description']]
+        st.dataframe(result_df.drop_duplicates().sort_values(['District', 'Destination']))
+    else:
+        st.info("🚫 No matching activities found for selected filters.")
+
 
 # --- Header ---
 st.title("📊 Sentiment Analysis of Tourist Reviews in Sri Lanka")

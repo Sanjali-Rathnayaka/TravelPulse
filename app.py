@@ -227,7 +227,7 @@ if not map_df.empty:
 else:
     st.warning("⚠️ No geolocation data available to plot.")
  
-# --- Optional: Display Filtered Activities Table ---
+#  Display Filtered Activities Table ---
 if filter_mode == "03. Select Activity Category" and not filtered_df.empty:
     st.subheader("📋 Matched Rural Destinations & Activities")
     result_df = activities_df[
@@ -235,6 +235,96 @@ if filter_mode == "03. Select Activity Category" and not filtered_df.empty:
         (activities_df['Activity Subtype'].isin(selected_subtypes) if selected_subtypes else True)
     ][['District', 'Destination', 'Activity Category', 'Activity Subtype', 'Description']]
     st.dataframe(result_df.drop_duplicates().sort_values(['District', 'Destination']))
+ # --- 7. Generate Travel Itinerary ---
+st.subheader("🧳 Personalized Travel Itinerary Planner")
+
+with st.form("itinerary_form"):
+    st.markdown("🎒 **Tell us about your trip preferences**")
+
+    num_days = st.slider("🗓️ Trip Duration (in days)", 1, 10, 3)
+    preferred_categories = st.multiselect(
+        "🎯 Preferred Activity Categories",
+        options=sorted(activities_df['Activity Category'].dropna().unique()),
+        default=["Adventure", "Cultural"]
+    )
+    preferred_district = st.selectbox(
+        "📍 Preferred District (Optional)",
+        options=["Any"] + sorted(df['District'].dropna().unique())
+    )
+    accommodation_type = st.selectbox("🏨 Accommodation Type (for demo)", ["Eco Lodge", "Hotel", "Guesthouse"])
+
+    submitted = st.form_submit_button("Generate Itinerary")
+
+if submitted:
+    st.markdown("### 🗺️ Your Travel Itinerary")
+
+    # Filter matching destinations
+    itinerary_df = activities_df[
+        activities_df['Activity Category'].isin(preferred_categories)
+    ]
+    if preferred_district != "Any":
+        itinerary_df = itinerary_df[itinerary_df['District'] == preferred_district]
+
+    itinerary_df = itinerary_df.drop_duplicates(subset=['Destination']).sample(frac=1).reset_index(drop=True)
+
+    # Divide into days
+    destinations_per_day = max(1, len(itinerary_df) // num_days)
+    itinerary_plan = []
+
+    for day in range(num_days):
+        day_plan = itinerary_df.iloc[day * destinations_per_day : (day + 1) * destinations_per_day]
+        if not day_plan.empty:
+            itinerary_plan.append((f"Day {day+1}", day_plan))
+
+    # Display itinerary
+    for day_label, day_df in itinerary_plan:
+        st.markdown(f"#### 📅 {day_label}")
+        for _, row in day_df.iterrows():
+            st.markdown(f"""
+            - **Destination:** {row['Destination']} ({row['District']})
+            - **Activity:** {row['Activity Subtype']} ({row['Activity Category']})
+            - **Description:** {row['Description']}
+            - **Estimated Travel Time:** ~1-2 hrs
+            - **Accommodation Suggestion:** {accommodation_type} in {row['District']}
+            """)
+        st.markdown("---")
+
+    if not itinerary_plan:
+        st.warning("⚠️ No destinations found for selected preferences.")
+import openrouteservice
+from openrouteservice import convert
+
+# Replace with your actual API key
+ORS_API_KEY = "YOUR_ORS_API_KEY"
+
+client = openrouteservice.Client(key=ORS_API_KEY)
+
+def get_travel_distance_time(coord1, coord2, profile="driving-car"):
+    try:
+        route = client.directions(
+            coordinates=[coord1, coord2],
+            profile=profile,
+            format='geojson'
+        )
+        distance_km = route['features'][0]['properties']['segments'][0]['distance'] / 1000  # in km
+        duration_min = route['features'][0]['properties']['segments'][0]['duration'] / 60  # in minutes
+        return round(distance_km, 2), round(duration_min, 2)
+    except Exception as e:
+        return None, None
+     min_budget = int(activities_df['Estimated Cost'].min())
+max_budget = int(activities_df['Estimated Cost'].max())
+
+user_budget = st.sidebar.slider("Select Your Budget Range (LKR)", min_budget, max_budget, (min_budget, max_budget))
+
+filtered_df = activities_df[
+    (activities_df['Estimated Cost'] >= user_budget[0]) & 
+    (activities_df['Estimated Cost'] <= user_budget[1])
+]
+cities = df['District'].dropna().unique()
+start_city = st.sidebar.selectbox("Start City", sorted(cities))
+end_city = st.sidebar.selectbox("End City", sorted(cities))
+
+
  
 # --- Footer ---
 st.markdown("---")

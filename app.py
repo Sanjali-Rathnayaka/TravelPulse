@@ -75,7 +75,23 @@ filter_mode = st.sidebar.selectbox(
         "03. Select Activity Category"
     ]
 )
- 
+ #.
+if 'Estimated Cost' in activities_df.columns:
+    min_budget = int(activities_df['Estimated Cost'].min())
+    max_budget = int(activities_df['Estimated Cost'].max())
+
+    user_budget = st.sidebar.slider(
+        "💰 Select Your Budget Range (LKR)",
+        min_value=min_budget,
+        max_value=max_budget,
+        value=(min_budget, max_budget)
+    )
+
+    activities_df = activities_df[
+        (activities_df['Estimated Cost'] >= user_budget[0]) &
+        (activities_df['Estimated Cost'] <= user_budget[1])
+    ]
+
 # --- Filtering Logic ---
 filtered_df = df.copy()
  

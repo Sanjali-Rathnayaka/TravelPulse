@@ -15,12 +15,18 @@ df['Destination'] = df['Destination'].str.title()
 df = df[df['Sentiment'].isin(['Positive', 'Neutral', 'Negative'])]
 df = df[df['Area Type'].isin(['Rural', 'Urban'])]
 
+selected_category = None
+selected_subtypes = []
 # ✅ Load rural activities dataset
 activities_df = pd.read_csv("Rural_Activities_Expanded.csv")
 activities_df.columns = activities_df.columns.str.strip()
 activities_df['District'] = activities_df['District'].str.title()
 activities_df['Destination'] = activities_df['Destination'].str.title()
 activities_df['Activity Type'] = activities_df['Activity Type'].str.title()
+
+# Initialize filter variables
+selected_category = None
+selected_subtypes = []
 
 # 🔁 Map subtypes to categories manually
 category_map = {

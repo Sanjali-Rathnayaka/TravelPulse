@@ -93,6 +93,7 @@ if 'Estimated Cost' in activities_df.columns:
     ]
 
 
+
 # --- Filtering Logic ---
 filtered_df = df.copy()
  
